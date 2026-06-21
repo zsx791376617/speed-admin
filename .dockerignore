@@ -1,0 +1,14 @@
+node_modules/
+vendor/
+web/node_modules/
+web/dist/
+.git/
+.gitignore
+.env
+.env.*
+docker/
+docker-compose.yml
+Dockerfile
+*.md
+*.docx
+*.gitkeep
