@@ -7,6 +7,6 @@ return [
     // \think\middleware\LoadLangPack::class,
     // Session初始化
     // \think\middleware\SessionInit::class
-    // 跨域中间件
-    \think\middleware\AllowCrossDomain::class,
+    // 跨域中间件 - 使用自定义的Cors中间件
+    \app\middleware\Cors::class,
 ];

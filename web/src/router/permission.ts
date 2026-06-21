@@ -12,7 +12,7 @@ import { notification } from "ant-design-vue";
 export function setupRouterGuard(router: Router) {
   NProgress.configure({ showSpinner: false });
 
-  const whiteList = ["/login"];
+  const whiteList = ["/login", "/test-api"];
 
   router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore();

@@ -14,7 +14,8 @@ return [
     'default_timezone' => 'Asia/Shanghai',
     // 应用映射（自动多应用模式有效）
     'app_map'          => [
-
+        'api' => 'api',
+        'adminapi' => 'adminapi',
     ],
     // 域名绑定（自动多应用模式有效）
     'domain_bind'      => [],
@@ -27,5 +28,5 @@ return [
     // 错误显示信息,非调试模式有效
     'error_message'    => '页面错误！请稍后再试～',
     // 显示错误信息
-    'show_error_msg'   => false,
+    'show_error_msg'   => true,
 ];

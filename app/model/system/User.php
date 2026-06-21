@@ -54,4 +54,15 @@ class User extends BaseModel
         $query->whereLike('realname|pinyin', trim($name))->field('id,realname');
     }
 
+    /**
+     * 根据用户名获取用户
+     *
+     * @param string $username
+     * @return mixed
+     */
+    public static function getByUsername(string $username)
+    {
+        return self::where('username', $username)->find();
+    }
+
 }

@@ -1,0 +1,1024 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clinoppe 世界 - 微信小程序游戏 α 版 API",
+    "description": "《Clinoppe 世界》微信小程序游戏后端API接口文档，包含用户系统、关卡寻物、迷你游戏、道具体力、月卡权益、成就藏品、社交分享、排行榜等模块",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost/api/alpha",
+      "description": "开发环境"
+    },
+    {
+      "url": "https://api.example.com/api/alpha",
+      "description": "生产环境"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Response": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "状态码：0=成功，非0=错误",
+            "example": 0
+          },
+          "msg": {
+            "type": "string",
+            "description": "提示文案",
+            "example": "操作成功"
+          },
+          "data": {
+            "type": "object",
+            "description": "业务数据主体"
+          }
+        }
+      },
+      "UserInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "用户ID" },
+          "nick_name": { "type": "string", "description": "昵称" },
+          "avatar_url": { "type": "string", "description": "头像地址" },
+          "total_score": { "type": "integer", "description": "历史总积分" },
+          "max_score": { "type": "integer", "description": "单局最高分" },
+          "stamina": { "type": "integer", "description": "当前体力值" },
+          "max_stamina": { "type": "integer", "description": "体力上限" },
+          "vip_status": { "type": "integer", "description": "月卡状态：0=未开通 1=已开通" },
+          "vip_expire_time": { "type": "integer", "description": "月卡过期时间戳" },
+          "platform": { "type": "integer", "description": "登录平台：1=微信小程序 2=Web 3=App" }
+        }
+      },
+      "LevelInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "关卡ID" },
+          "level_name": { "type": "string", "description": "关卡名称" },
+          "map_img": { "type": "string", "description": "地图背景图地址" },
+          "difficulty": { "type": "integer", "description": "难度：1-5级" },
+          "game_time": { "type": "integer", "description": "单局限时(秒)" },
+          "unlocked": { "type": "boolean", "description": "是否解锁" },
+          "star": { "type": "integer", "description": "星级：0-3星" },
+          "pass_status": { "type": "integer", "description": "0=未通关 1=已通关" },
+          "best_score": { "type": "integer", "description": "该关卡最高分" },
+          "play_times": { "type": "integer", "description": "游玩次数" }
+        }
+      },
+      "ItemInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "道具ID" },
+          "item_name": { "type": "string", "description": "道具名称" },
+          "icon_url": { "type": "string", "description": "道具图标" },
+          "type": { "type": "integer", "description": "1=提示 2=放大镜 3=时长延长" },
+          "describe": { "type": "string", "description": "道具描述" },
+          "num": { "type": "integer", "description": "剩余数量" }
+        }
+      },
+      "StaminaInfo": {
+        "type": "object",
+        "properties": {
+          "stamina": { "type": "integer", "description": "当前体力值" },
+          "max_stamina": { "type": "integer", "description": "体力上限" },
+          "recover_time": { "type": "integer", "description": "下次体力恢复时间戳" },
+          "vip_unlimited": { "type": "integer", "description": "月卡无限体力：0=关闭 1=开启" }
+        }
+      },
+      "VipInfo": {
+        "type": "object",
+        "properties": {
+          "vip_status": { "type": "integer", "description": "月卡状态：0=未开通 1=已开通" },
+          "expire_time": { "type": "integer", "description": "过期时间戳" },
+          "vip_days": { "type": "integer", "description": "剩余天数" },
+          "daily_gift_get": { "type": "integer", "description": "当日礼包是否领取：0=未领 1=已领" }
+        }
+      },
+      "AchievementInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "成就ID" },
+          "name": { "type": "string", "description": "成就名称" },
+          "icon": { "type": "string", "description": "成就图标" },
+          "condition": { "type": "string", "description": "解锁条件" },
+          "reward_type": { "type": "integer", "description": "奖励类型：1=道具 2=头像 3=积分" },
+          "reward_id": { "type": "integer", "description": "奖励关联ID" },
+          "reward_num": { "type": "integer", "description": "奖励数量" },
+          "unlocked": { "type": "boolean", "description": "是否解锁" },
+          "get_time": { "type": "integer", "description": "解锁时间" },
+          "reward_get": { "type": "integer", "description": "奖励是否领取" }
+        }
+      },
+      "CollectionInfo": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "description": "藏品总数" },
+          "collected": { "type": "integer", "description": "已收集数量" },
+          "list": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "name": { "type": "string" },
+                "icon": { "type": "string" },
+                "type": { "type": "integer" },
+                "level_id": { "type": "integer" },
+                "collected": { "type": "boolean" },
+                "get_time": { "type": "integer" }
+              }
+            }
+          }
+        }
+      },
+      "ShareInfo": {
+        "type": "object",
+        "properties": {
+          "share_code": { "type": "string", "description": "分享短码" },
+          "share_url": { "type": "string", "description": "分享链接" },
+          "expire_time": { "type": "integer", "description": "过期时间戳" }
+        }
+      },
+      "RankingItem": {
+        "type": "object",
+        "properties": {
+          "rank": { "type": "integer", "description": "排名" },
+          "user_id": { "type": "integer", "description": "用户ID" },
+          "nick_name": { "type": "string", "description": "昵称" },
+          "avatar_url": { "type": "string", "description": "头像地址" },
+          "score": { "type": "integer", "description": "分数" }
+        }
+      },
+      "MinigameData": {
+        "type": "object",
+        "properties": {
+          "stack": {
+            "type": "object",
+            "properties": {
+              "best_score": { "type": "integer" },
+              "play_times": { "type": "integer" }
+            }
+          },
+          "puzzle": {
+            "type": "object",
+            "properties": {
+              "best_score": { "type": "integer" },
+              "play_times": { "type": "integer" },
+              "difficulty": { "type": "integer" },
+              "progress": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/user/login": {
+      "post": {
+        "summary": "多端统一登录",
+        "description": "微信小程序、Web、App多端统一登录接口",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platform": { "type": "integer", "description": "登录平台：1=微信小程序 2=Web 3=App", "example": 1 },
+                  "union_id": { "type": "string", "description": "多端统一账号标识", "example": "wx123456789" },
+                  "nick_name": { "type": "string", "description": "用户昵称", "example": "玩家小明" },
+                  "wx_avatar": { "type": "string", "description": "微信端原生头像地址（可选）", "example": "https://wx.qlogo.cn/xxx" }
+                },
+                "required": ["platform", "union_id", "nick_name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "token": { "type": "string", "description": "JWT令牌" },
+                            "user": { "$ref": "#/components/schemas/UserInfo" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "get": {
+        "summary": "获取用户资料",
+        "description": "获取当前登录用户的基本信息",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/UserInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/avatar/list": {
+      "get": {
+        "summary": "头像皮肤列表",
+        "description": "获取用户已拥有的头像皮肤列表",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer" },
+                              "name": { "type": "string" },
+                              "img_url": { "type": "string" },
+                              "type": { "type": "integer" },
+                              "owned": { "type": "boolean" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/avatar/switch": {
+      "post": {
+        "summary": "切换头像",
+        "description": "切换当前使用的头像皮肤",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar_id": { "type": "integer", "description": "头像ID", "example": 1 }
+                },
+                "required": ["avatar_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "切换成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/level/list": {
+      "get": {
+        "summary": "关卡列表",
+        "description": "获取所有关卡信息，包含解锁状态、星级、最高分",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/LevelInfo" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/level/settle": {
+      "post": {
+        "summary": "关卡结算",
+        "description": "关卡对局结算，更新通关状态、星级、分数",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "level_id": { "type": "integer", "description": "关卡ID", "example": 1 },
+                  "score": { "type": "integer", "description": "得分", "example": 1000 },
+                  "star": { "type": "integer", "description": "星级(0-3)", "example": 3 },
+                  "use_item_num": { "type": "integer", "description": "使用道具数量", "example": 2 }
+                },
+                "required": ["level_id", "score", "star"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "结算成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/LevelInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "结算失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "enum": [1003, 1004, 1006],
+                          "description": "1003=体力不足, 1004=道具不足, 1006=关卡未解锁"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/minigame/stack/settle": {
+      "post": {
+        "summary": "叠叠乐结算",
+        "description": "叠叠乐游戏结算",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "score": { "type": "integer", "description": "得分", "example": 500 }
+                },
+                "required": ["score"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "结算成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "best_score": { "type": "integer" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/minigame/puzzle/save": {
+      "post": {
+        "summary": "拼图进度保存",
+        "description": "保存拼图当前进度",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "difficulty": { "type": "integer", "description": "难度：1=3×3 2=4×4 3=5×5", "example": 1 },
+                  "progress": { "type": "string", "description": "拼图进度JSON字符串", "example": "[[1,2,3],[4,5,6],[7,8,0]]" }
+                },
+                "required": ["difficulty", "progress"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "保存成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/minigame/puzzle/settle": {
+      "post": {
+        "summary": "拼图结算",
+        "description": "拼图游戏结算",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "difficulty": { "type": "integer", "description": "难度：1=3×3 2=4×4 3=5×5", "example": 1 },
+                  "score": { "type": "integer", "description": "得分", "example": 800 }
+                },
+                "required": ["difficulty", "score"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "结算成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "best_score": { "type": "integer" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/minigame/data": {
+      "get": {
+        "summary": "迷你游戏数据",
+        "description": "获取叠叠乐和拼图的最佳成绩",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/MinigameData" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/item/list": {
+      "get": {
+        "summary": "道具库存",
+        "description": "获取用户当前道具库存",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/ItemInfo" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/item/use": {
+      "post": {
+        "summary": "使用道具",
+        "description": "使用指定道具",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "item_id": { "type": "integer", "description": "道具ID", "example": 1 },
+                  "num": { "type": "integer", "description": "使用数量", "example": 1 }
+                },
+                "required": ["item_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "使用成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          },
+          "400": {
+            "description": "使用失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "integer", "example": 1004 }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stamina/get": {
+      "get": {
+        "summary": "获取体力",
+        "description": "获取当前体力值、上限、恢复时间",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/StaminaInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vip/info": {
+      "get": {
+        "summary": "月卡状态",
+        "description": "获取月卡状态、剩余天数、礼包领取状态",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/VipInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vip/daily_gift": {
+      "post": {
+        "summary": "领取每日礼包",
+        "description": "月卡用户领取每日礼包",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "领取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "item_id": { "type": "integer" },
+                              "num": { "type": "integer" },
+                              "type": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "领取失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "integer", "example": 1005 }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/achievement/list": {
+      "get": {
+        "summary": "成就列表",
+        "description": "获取所有成就及解锁状态",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/AchievementInfo" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/achievement/reward": {
+      "post": {
+        "summary": "领取成就奖励",
+        "description": "领取已解锁成就的奖励",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "achievement_id": { "type": "integer", "description": "成就ID", "example": 1 }
+                },
+                "required": ["achievement_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "领取成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collection/list": {
+      "get": {
+        "summary": "藏品列表",
+        "description": "获取所有藏品及收集进度",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/CollectionInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/share/create": {
+      "post": {
+        "summary": "生成分享链接",
+        "description": "生成分享短码和链接",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "level_id": { "type": "integer", "description": "分享关卡ID（可选）", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/ShareInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/share/parse": {
+      "get": {
+        "summary": "解析分享链接",
+        "description": "通过分享短码解析分享信息",
+        "parameters": [
+          {
+            "name": "share_code",
+            "in": "query",
+            "required": true,
+            "description": "分享短码",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "解析成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/ShareInfo" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/share/help": {
+      "post": {
+        "summary": "互助寻物",
+        "description": "通过分享链接帮助他人寻物，双方获得奖励",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "share_code": { "type": "string", "description": "分享短码", "example": "ABC123DE" }
+                },
+                "required": ["share_code"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "互助成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ranking/list": {
+      "get": {
+        "summary": "排行榜列表",
+        "description": "获取总分排行榜Top100",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回数量（默认100）",
+            "schema": { "type": "integer", "example": 50 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/RankingItem" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ranking/my": {
+      "get": {
+        "summary": "我的排名",
+        "description": "获取当前用户的排名和分数",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Response" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "rank": { "type": "integer" },
+                            "score": { "type": "integer" },
+                            "nick_name": { "type": "string" },
+                            "avatar_url": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

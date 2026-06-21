@@ -35,6 +35,7 @@ export const useUserStore = defineStore("user", {
       return new Promise((resolve, reject) => {
         loginApi.login(userInfo)
           .then(response => {
+            console.log(response,111111);
             const { data } = response;
             if(data){
               this.setToken(data)

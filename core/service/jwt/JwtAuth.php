@@ -29,8 +29,8 @@ class JwtAuth
     public SystemClock $clock;
 
     public function __construct(
-        private readonly array $config,
-        private readonly string $scene,
+        private array $config,
+        private string $scene,
     ) {
         $this->clock = new SystemClock(new DateTimeZone(self::TIMEZONE));
     }

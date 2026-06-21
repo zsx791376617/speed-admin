@@ -11,6 +11,7 @@ class AuthToken {
         $jwt = Factory::getInstance('api');
         try {
             $userInfo = $jwt->verifyAccessToken();
+            $request->macro('uid', fn() => $userInfo['id']);
             $request->macro('user_id', fn() => $userInfo['id']);
         } catch (\Exception $e) {
             throw new FailedException($e->getMessage(), 401);
